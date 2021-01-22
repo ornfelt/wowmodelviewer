@@ -195,7 +195,7 @@ FbxNode * FBXHeaders::createMesh(FbxManager* &l_manager, FbxScene* &l_scene, WoW
 
 void FBXHeaders::createSkeleton(WoWModel * l_model, FbxScene *& l_scene, FbxNode *& l_skeletonNode, std::map<int, FbxNode*>& l_boneNodes)
 {
-  l_skeletonNode = FbxNode::Create(l_scene, qPrintable(QString::fromWCharArray(wxT("%1_rig")).arg(l_model->name())));
+  l_skeletonNode = FbxNode::Create(l_scene, qPrintable(QString::fromWCharArray(wxT("root"))));
   FbxSkeleton* bone_group_skeleton_attribute = FbxSkeleton::Create(l_scene, "");
   bone_group_skeleton_attribute->SetSkeletonType(FbxSkeleton::eRoot);
   bone_group_skeleton_attribute->Size.Set(10.0 * SCALE_FACTOR);
@@ -244,7 +244,7 @@ void FBXHeaders::createSkeleton(WoWModel * l_model, FbxScene *& l_scene, FbxNode
       trans -= l_model->bones[pid].pivot;
 
     FbxString bone_name(qPrintable(l_model->name()));
-    bone_name += "_bone_";
+    bone_name = "bone_";
     bone_name += static_cast<int>(i);
 
     FbxNode* skeleton_node = FbxNode::Create(l_scene, bone_name);
