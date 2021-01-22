@@ -8,5 +8,6 @@ src/html/*
 .settings/*
 Installers/Windows/NSIS/*.exe
 VisualStudio2013/*
+wmv_sdk
 build
 .vs
