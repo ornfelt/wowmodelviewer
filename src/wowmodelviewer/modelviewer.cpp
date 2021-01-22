@@ -925,7 +925,7 @@ void ModelViewer::LoadLayout()
     else
     {
       // No need to display these windows on startup
-      interfaceManager.GetPane(modelControl).Show(false);
+      interfaceManager.GetPane(modelControl).Show(true);
       interfaceManager.GetPane(settingsControl).Show(false);
 
       // If character panel is showing,  hide it
