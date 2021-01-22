@@ -533,7 +533,7 @@ void FileControl::OnTreeSelect(wxTreeEvent &event)
     modelviewer->animControl->UpdateWMO(modelviewer->canvas->wmo, id);
 
     // wxAUI
-    modelviewer->interfaceManager.GetPane(modelviewer->charControl).Show(false);
+    modelviewer->interfaceManager.GetPane(modelviewer->charControl).Show(true);
 
     UpdateInterface();
   } else if (filterMode == FILE_FILTER_IMAGE) {

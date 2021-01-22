@@ -929,7 +929,7 @@ void ModelViewer::LoadLayout()
       interfaceManager.GetPane(settingsControl).Show(false);
 
       // If character panel is showing,  hide it
-      interfaceManager.GetPane(charControl).Show(isChar);
+      interfaceManager.GetPane(charControl).Show(/*isChar*/true);
 #ifndef  _LINUX // buggy
       interfaceManager.Update();
 #endif
@@ -1035,8 +1035,8 @@ void ModelViewer::LoadModel(GameFile * file)
   }
 
   // wxAUI
-  interfaceManager.GetPane(charControl).Show(isChar);
-  interfaceManager.GetPane(charControl).Show(isChar);
+  interfaceManager.GetPane(charControl).Show(/*isChar*/);
+  //interfaceManager.GetPane(charControl).Show(isChar);
   if (isChar)
   {
     charMenu->Check(ID_SHOW_UNDERWEAR, true);
@@ -1169,7 +1169,7 @@ void ModelViewer::LoadNPC(unsigned int modelid)
 
   // wxAUI
   // hide charControl if current model is not a Character one.
-  interfaceManager.GetPane(charControl).Show(isChar);
+  interfaceManager.GetPane(charControl).Show(/*isChar*/true);
 
   interfaceManager.Update();
 }
@@ -1228,7 +1228,7 @@ void ModelViewer::LoadItem(unsigned int id)
   catch (...) {}
 
   // wxAUI
-  interfaceManager.GetPane(charControl).Show(isChar);
+  interfaceManager.GetPane(charControl).Show(/*isChar*/ true);
   interfaceManager.Update();
 }
 
