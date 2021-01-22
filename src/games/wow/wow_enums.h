@@ -1,4 +1,4 @@
-/*
+﻿/*
  * wow_enums.h
  *
  *  Created on: 7 Aug. 2015
@@ -197,6 +197,150 @@ enum KeyBoneTable { // wxString Bone_Names[]
   BONE_WHEEL8,    // 34, Wheel8
   BONE_MAX
 };
+
+/* https://wowdev.wiki/M2#Bone_Lookup_Table
+Bone Lookup Table
+Lookup table for bones referenced from M2SkinSection.
+
+struct
+{
+	uint16_t bone;
+} bone_lookup_table[];
+
+Key - Bone Lookup
+Its a lookup table for key skeletal bones like hands, arms, legs, etc.nKeyBoneLookup is 27 for the most models.At static models it is mostly 1.
+
+struct
+{
+	uint16_t bone; // -1 if none
+} key_bone_lookup[];
+
+Key Bone Names
+Quoted names are confirmed.
+
+	00 "ArmL"
+	01 "ArmR"
+	02 "ShoulderL"
+	03 "ShoulderR"
+	04 "SpineLow" / "Upper Body" in animkits, if not present use Head
+	05 "Waist"
+	06 "Head"
+	07 "Jaw"
+	08 "IndexFingerR"
+	09 "MiddleFingerR"
+	10 "PinkyFingerR"
+	11 "RingFingerR"
+	12 "ThumbR"
+	13 "IndexFingerL"
+	14 "MiddleFingerL"
+	15 "PinkyFingerL"
+	16 "RingFingerL"
+	17 "ThumbL"
+	18 "$BTH"
+	19 "$CSR"
+	20 "$CSL"
+	21 "_Breath"
+	22 "_Name"
+	23 "_NameMount"
+	24 "$CHD"
+	25 "$CCH"
+	26 "Root"
+	27 "Wheel1" ≥ Wrath
+	28 "Wheel2" ≥ Wrath
+	29 "Wheel3" ≥ Wrath
+	30 "Wheel4" ≥ Wrath
+	31 "Wheel5" ≥ Wrath
+	32 "Wheel6" ≥ Wrath
+	33 "Wheel7" ≥ Wrath
+	34 "Wheel8" ≥ Wrath
+
+Added some time after WoD :
+
+	35 "FaceAttenuation"
+	36 CapeParent
+	37 CapeChild1
+	38 CapeChild2
+	39 CapeChild3
+	40 CapeChild4
+	43 TabardParent
+	44 TabardChild1
+	45 TabardChild2
+	46 unk head top
+	47 unk head top
+	48 UpperBodyParent
+	49 NeckParent
+	50 NeckChild1
+	51 LowerBodyParent
+	52 "Buckle"
+	53 "Chest"
+	54 "Main"
+	55 LegR
+	56 LegL
+	57 KneeR
+	58 KneeL
+	59 "FootL"
+	60 "FootR"
+	61 "ElbowR"
+	62 "ElbowL"
+	63 Unk_ElbowL_Child
+	64 "HandR"
+	65 "HandL"
+	66 "WeaponR"
+	67 "WeaponL"
+	68 Unk_WristL_Child
+	69 Unk_WristR_Child
+	70 KneeR_UpperRig
+	71 KneeL_UpperRig
+	72 ArmR_2
+	73 ArmL_2
+	74 ElbowR_UpperRig
+	75 ElbowL_UpperRig
+	76 ForearmR
+	77 ForearmL
+	78 WristR_UpperRig
+	79 WristL_UpperRig
+
+Non - Key Bone Names
+This list is confirmed bone names, although they aren't used as key bones.
+
+	"$BWA"
+	"$BWP"
+	"$BWR"
+	"$BWS"
+	"$CAH"
+	"$CPP"
+	"$CSS"
+	"$CST"
+	"$DTH"
+	"$ESD"
+	"$FD1"
+	"$FL0"
+	"$FR0"
+	"$FSD"
+	"$HIT"
+	"$SCD"
+	"$SHL"
+	"$SHR"
+	"$TRD"
+
+Hierarchy requirement
+from animkits(some 8.x + 9.x build) :
+
+	Full Body(-1 or 26 or 5)
+	Upper Body(4)
+	Right Shoulder(2)
+	Right Arm(1)
+	Right Hand(8 or 9 or 10 or 11 or 12)
+	Left Shoulder(3)
+	Left Arm(0)
+	Left Hand(13 or 14 or 15 or 16 or 17)
+	Head(6)
+	Jaw(7)
+	Face Upper(193) ≥ SL(9.0.1.34081)
+	Face Lower(228) ≥ SL(9.0.1.34081)
+	Hair(191) ≥ SL(9.0.1.34081)
+	Beard(192) ≥ SL(9.0.1.34081)
+	Wheel1…8(27…34)*/
 
 enum ModelType {
   MT_NORMAL,
