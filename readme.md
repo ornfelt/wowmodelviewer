@@ -1,4 +1,3 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/lxfnqlx50ve8jtsr/branch/default?svg=true)](https://ci.appveyor.com/project/jeromnimo/wowmodelviewer/branch/default)
 
 # WoW Model Viewer
 Your premiere tool for viewing, equipping and animating World of Warcraft models!
