@@ -8,6 +8,7 @@ when the command prompt shows:
 cd..
 mkdir build
 cd build
-cmake -G "Visual Studio 15 2017" -DBUILDNUMBER=1 ..\src
-
+cmake -G "Visual Studio 15 2017" -DBUILDNUMBER=0 ..\src
 cmake --build . --target release --config Release
+
+if not the first build, just run the two Cmake commands in the build folder.
