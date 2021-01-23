@@ -82,119 +82,143 @@ std::wstring FBXExporter::fileSaveTitle() const
 
 std::wstring FBXExporter::fileSaveFilter() const
 {
-  return L"FBX files (*.fbx)|*.fbx";
+  return L"FBX files (*.fbx)|*.fbx"; 
 }
 
-bool FBXExporter::exportModel(Model * model, std::wstring target)
+bool FBXExporter::exportModel(Model* model, std::wstring target)
 {
-  reset();
+	reset();
 
-  m_p_model = dynamic_cast<WoWModel *>(model);
+	m_p_model = dynamic_cast<WoWModel*>(model);
 
-  if(!m_p_model)
-      return false;
+	if (!m_p_model)
+		return false;
 
-  m_filename = target;
-  m_p_manager = FbxManager::Create();
-  if (!m_p_manager)
-  {
-    LOG_ERROR << "Unable to create the FBX SDK manager";
-    return false;
-  }
+	// disable all geosets initially
+	for (size_t i = 0; i < m_p_model->geosets.size(); i++)
+	{
+		m_p_model->showGeoset(i, false);
+	}
 
-  FbxIOSettings *ios = FbxIOSettings::Create(m_p_manager, IOSROOT);
-  m_p_manager->SetIOSettings(ios);
+	//enable geosets one at a time
+	for (size_t i = 0; i < m_p_model->geosets.size(); i++)
+	{
+		m_p_model->showGeoset(i, true);
 
-  // ensure that textures are embed in final fbx file
-  ios->SetBoolProp(EXP_FBX_MATERIAL, true);
-  ios->SetBoolProp(EXP_FBX_TEXTURE, true);
-  ios->SetBoolProp(EXP_FBX_EMBEDDED, true);
-  ios->SetBoolProp(EXP_FBX_SHAPE, true);
-  ios->SetBoolProp(EXP_FBX_GOBO, true);
-  ios->SetBoolProp(EXP_FBX_ANIMATION, false);
-  ios->SetBoolProp(EXP_FBX_GLOBAL_SETTINGS, true);
+		m_p_manager = FbxManager::Create();
+		if (!m_p_manager)
+		{
+			LOG_ERROR << "Unable to create the FBX SDK manager";
+			return false;
+		}
 
-  FbxExporter* exporter = 0;
+		FbxIOSettings *ios = FbxIOSettings::Create(m_p_manager, IOSROOT);
+		m_p_manager->SetIOSettings(ios);
 
-  m_fileVersion = FBX_2014_00_COMPATIBLE;
+		// ensure that textures are embed in final fbx file
+		ios->SetBoolProp(EXP_FBX_MATERIAL, true);
+		ios->SetBoolProp(EXP_FBX_TEXTURE, true);
+		ios->SetBoolProp(EXP_FBX_EMBEDDED, true);
+		ios->SetBoolProp(EXP_FBX_SHAPE, true);
+		ios->SetBoolProp(EXP_FBX_GOBO, true);
+		ios->SetBoolProp(EXP_FBX_ANIMATION, false);
+		ios->SetBoolProp(EXP_FBX_GLOBAL_SETTINGS, true);
 
-  if (FBXHeaders::createFBXHeaders(m_fileVersion, QString::fromWCharArray(m_filename.c_str()), m_p_manager, exporter, m_p_scene) == false)
-    return false;
+		FbxExporter* exporter = 0;
 
-  // add some info to exported scene
-  FbxDocumentInfo* sceneInfo = FbxDocumentInfo::Create(m_p_manager,"SceneInfo");
-  sceneInfo->mTitle = m_p_model->name().toStdString().c_str();
-  sceneInfo->mAuthor = QString::fromStdWString(GLOBALSETTINGS.appName()).toStdString().c_str();
-  sceneInfo->mRevision = QString::fromStdWString(GLOBALSETTINGS.appVersion()).toStdString().c_str();
-  m_p_scene->SetSceneInfo(sceneInfo);
+		m_fileVersion = FBX_2014_00_COMPATIBLE;
 
-  // export main model mesh
-  // follow FBX SDK example (ExportScene01) for organization
-  try
-  {
-    createMeshes();
-    LOG_INFO << "Meshes successfully created";
+		m_filename = target + std::to_wstring(i);
 
-    createMaterials();
-    LOG_INFO << "Materials successfully created";
+		if (FBXHeaders::createFBXHeaders(m_fileVersion, QString::fromWCharArray(m_filename.c_str()), m_p_manager, exporter, m_p_scene) == false)
+			return false;
 
-    createSkeletons();
-    LOG_INFO << "Skeleton successfully created";
+		// add some info to exported scene
+		FbxDocumentInfo* sceneInfo = FbxDocumentInfo::Create(m_p_manager, "SceneInfo");
+		sceneInfo->mTitle = m_p_model->name().toStdString().c_str();
+		sceneInfo->mAuthor = QString::fromStdWString(GLOBALSETTINGS.appName()).toStdString().c_str();
+		sceneInfo->mRevision = QString::fromStdWString(GLOBALSETTINGS.appVersion()).toStdString().c_str();
+		m_p_scene->SetSceneInfo(sceneInfo);
 
-    linkMeshAndSkeleton();
+		// export main model mesh
+		// follow FBX SDK example (ExportScene01) for organization
+		try
+		{
+			createMeshes(i);
+			LOG_INFO << "Meshes successfully created";
 
-    FBXHeaders::storeBindPose(m_p_scene, m_boneClusters, m_p_meshNode);
-    FBXHeaders::storeRestPose(m_p_scene, m_p_skeletonNode);
+			createMaterials();
+			LOG_INFO << "Materials successfully created";
 
-    for (WoWModel::iterator it = m_p_model->begin(); it != m_p_model->end(); ++it)
-    {
-      std::map<POSITION_SLOTS, WoWModel *> itemModels = (*it)->models();
-      if (!itemModels.empty())
-      {
-        for (std::map<POSITION_SLOTS, WoWModel *>::iterator it = itemModels.begin(); it != itemModels.end(); ++it)
-        {
-          if (m_attachBoneClusters.find(it->first) != m_attachBoneClusters.end() && m_attachMeshNodes.find(it->first) != m_attachMeshNodes.end())
-            FBXHeaders::storeBindPose(m_p_scene, m_attachBoneClusters[it->first], m_attachMeshNodes[it->first]);
-          //if (m_attachSkeletonNode.find(it->first) != m_attachSkeletonNode.end())
-            //FBXHeaders::storeRestPose(m_p_scene, m_attachSkeletonNode[it->first]);
-        }
-      }
-    }
-  }
-  catch(const std::exception& ex)
-  {
-    LOG_ERROR << "Error during export:" << ex.what();
-    return false;
-  }
+			createSkeletons();
+			LOG_INFO << "Skeleton successfully created";
 
-  if(!exporter->Export(m_p_scene))
-  {
-    LOG_ERROR << "Unable to export FBX scene";
-    return false;
-  }
-  LOG_INFO << "Model successfully created";
+			linkMeshAndSkeleton();
 
-  // delete texture files created during export
-  for (auto it : m_texturesToExport)
-    _wremove((it.first).c_str());
+			FBXHeaders::storeBindPose(m_p_scene, m_boneClusters, m_p_meshNode);
+			FBXHeaders::storeRestPose(m_p_scene, m_p_skeletonNode);
 
-  // Export bulk animations
-  if (m_animsToExport.size() > 0)
-  {
-    try
-    {
-      createAnimations();
-      LOG_INFO << "Animations successfully created";
-    }
-    catch (const std::exception& ex)
-    {
-      LOG_ERROR << "Error during bulk animation export:" << ex.what();
-      return false;
-    }
-  }
+			for (WoWModel::iterator it = m_p_model->begin(); it != m_p_model->end(); ++it)
+			{
+				std::map<POSITION_SLOTS, WoWModel *> itemModels = (*it)->models();
+				if (!itemModels.empty())
+				{
+					for (std::map<POSITION_SLOTS, WoWModel *>::iterator it = itemModels.begin(); it != itemModels.end(); ++it)
+					{
+						if (m_attachBoneClusters.find(it->first) != m_attachBoneClusters.end() && m_attachMeshNodes.find(it->first) != m_attachMeshNodes.end())
+							FBXHeaders::storeBindPose(m_p_scene, m_attachBoneClusters[it->first], m_attachMeshNodes[it->first]);
+						//if (m_attachSkeletonNode.find(it->first) != m_attachSkeletonNode.end())
+						//FBXHeaders::storeRestPose(m_p_scene, m_attachSkeletonNode[it->first]);
+					}
+				}
+			}
+		}
+		catch (const std::exception& ex)
+		{
+			LOG_ERROR << "Error during export:" << ex.what();
+			return false;
+		}
 
-  LOG_INFO << "FBX scene successfully exported";
-  return true;
+		if (!exporter->Export(m_p_scene))
+		{
+			LOG_ERROR << "Unable to export FBX scene";
+			return false;
+		}
+		LOG_INFO << "Model successfully created";
+
+		// delete texture files created during export
+		for (auto it : m_texturesToExport)
+			_wremove((it.first).c_str());
+
+		if (i == 0)
+		{
+			// Export bulk animations
+			if (m_animsToExport.size() > 0)
+			{
+				try
+				{
+					createAnimations();
+					LOG_INFO << "Animations successfully created";
+				}
+				catch (const std::exception& ex)
+				{
+					LOG_ERROR << "Error during bulk animation export:" << ex.what();
+					return false;
+				}
+			}
+		}
+
+		m_p_model->showGeoset(i, false);
+		reset();
+
+		m_p_model = dynamic_cast<WoWModel*>(model);
+
+		if (!m_p_model)
+			return false;
+	}
+
+	LOG_INFO << "FBX scene successfully exported";
+	return true;
 }
 
 // Protected methods
@@ -203,9 +227,9 @@ bool FBXExporter::exportModel(Model * model, std::wstring target)
 // Private methods
 //--------------------------------------------------------------------
 
-void FBXExporter::createMeshes()
+void FBXExporter::createMeshes(int i)
 {
-  m_p_meshNode = FBXHeaders::createMesh(m_p_manager, m_p_scene ,m_p_model);
+  m_p_meshNode = FBXHeaders::createMesh(m_p_manager, m_p_scene ,m_p_model, i);
 
   FbxNode* root_node = m_p_scene->GetRootNode();
   root_node->AddChild(m_p_meshNode);
@@ -228,7 +252,7 @@ void FBXExporter::createMeshes()
           m = m_p_model->bones[m_p_model->atts[l].bone].mat;
         }
 
-        FbxNode* itemMeshNode = FBXHeaders::createMesh(m_p_manager, m_p_scene, itemModel, m);
+        FbxNode* itemMeshNode = FBXHeaders::createMesh(m_p_manager, m_p_scene, itemModel, i, m);
         m_attachMeshNodes[it->first] = itemMeshNode;
 
         root_node->AddChild(itemMeshNode);

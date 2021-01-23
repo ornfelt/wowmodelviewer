@@ -95,17 +95,20 @@ bool FBXHeaders::createFBXHeaders(FbxString fileVersion, QString l_FileName, Fbx
 }
 
 // Create mesh.
-FbxNode * FBXHeaders::createMesh(FbxManager* &l_manager, FbxScene* &l_scene, WoWModel * model, const glm::mat4 & matrix, const glm::vec3 & offset)
+FbxNode * FBXHeaders::createMesh(FbxManager* &l_manager, FbxScene* &l_scene, WoWModel * model, int i, const glm::mat4 & matrix, const glm::vec3 & offset)
 {
+	auto name = std::string(model->name().toStdString());
+	name += std::to_string(i);
+
   // Create a node for the mesh.
-  FbxNode *meshNode = FbxNode::Create(l_manager, qPrintable(model->name()));
+  FbxNode *meshNode = FbxNode::Create(l_manager, name.c_str());
 
   // Create new Matrix Data
   const auto m = glm::scale(glm::vec3(matrix[0][0], matrix[1][1], matrix[2][2]));
 
   // Create mesh.
   const auto num_of_vertices = model->origVertices.size();
-  FbxMesh* mesh = FbxMesh::Create(l_manager, model->name().toStdString().c_str());
+  FbxMesh* mesh = FbxMesh::Create(l_manager, name.c_str());
   mesh->InitControlPoints((int)num_of_vertices);
   FbxVector4* vertices = mesh->GetControlPoints();
 

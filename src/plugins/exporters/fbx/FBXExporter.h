@@ -102,7 +102,7 @@ class FBXExporter : public ExporterPlugin
     
     // Methods
     void createMaterials();
-    void createMeshes();
+    void createMeshes(int i);
     void createSkeletons();
     void linkMeshAndSkeleton();
     void createAnimations();
