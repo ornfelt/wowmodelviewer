@@ -1,7 +1,3 @@
-clone both wowmodelviewer and wmv_sdk
-
-copy the wmv_sdk folder to wowmodelviewer directory.
-
 inside wmv_sdk: Run wmv_sdk.bat
 
 when the command prompt shows:
