@@ -1,0 +1,15 @@
+clone both wowmodelviewer and wmv_sdk
+
+copy the wmv_sdk folder to wowmodelviewer directory.
+
+inside wmv_sdk: Run wmv_sdk.bat
+
+when the command prompt shows:
+cd..
+mkdir build
+cd build
+cmake -G "Visual Studio 15 2017" -DBUILDNUMBER=0 ..\src
+cmake --build . --target release --config Release
+
+if not the first build, just run the two Cmake commands in the build folder.
+
