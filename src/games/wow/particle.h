@@ -1,6 +1,8 @@
 #ifndef PARTICLE_H
 #define PARTICLE_H
 
+#include <ostream> // iostream or <ostream> for std::ostream and std::endl
+
 #ifdef _WIN32
 #    ifdef BUILDING_WOW_DLL
 #        define _PARTICLE_API_ __declspec(dllexport)

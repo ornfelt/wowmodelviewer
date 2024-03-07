@@ -36,6 +36,7 @@
 #include "type_vec4.hpp"
 #include "_vectorize.hpp"
 #include <limits>
+#include <cmath>
 
 namespace glm{
 namespace detail
