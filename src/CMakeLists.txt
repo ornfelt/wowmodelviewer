@@ -6,10 +6,8 @@ include(${CMAKE_CURRENT_LIST_DIR}/cmake/common.cmake)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set_property(GLOBAL PROPERTY AUTOGEN_TARGETS_FOLDER QTAutoMoc)
 
-set(BUILDNUMBER 0)
-
-# Set WMV_SDK_BASEDIR environment variable
-set(ENV{WMV_SDK_BASEDIR} "C:\\Users\\jonas\\Downloads\\wowmodelviewer\\wmv_sdk")
+#set(BUILDNUMBER 0)
+#set(ENV{WMV_SDK_BASEDIR} "C:\\Users\\jonas\\Downloads\\wowmodelviewer\\wmv_sdk")
 
 if(DEFINED BUILDNUMBER)
   add_definitions(-D_BUILDNUMBER=${BUILDNUMBER})
